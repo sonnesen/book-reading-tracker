@@ -1,0 +1,845 @@
+openapi: '3.0.3'
+info:
+  title: Book Club Reading Tracker API
+  description: >
+    API for managing an online book club's reading progress, schedules, and discussion sessions.
+    It allows the creation of books, reading schedules, members, member progress, and meeting sessions.
+  version: '1.0'
+servers:
+  - url: http://localhost:8080/v1
+    description: Local server
+  - url: https://api.example.com/v1
+    description: Production server
+tags:
+  - name: Books
+    description: Operations related to books
+  - name: Members
+    description: Operations related to book club members
+  - name: Reading Schedules
+    description: Operations related to reading schedules for books
+  - name: Progress
+    description: Operations related to tracking members' reading progress
+  - name: Meetings
+    description: Operations related to book discussion meetings
+paths:
+  /books:
+    get:
+      tags:
+        - Books
+      summary: Return a list of books with pagination
+      operationId: listBooks
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/PaginatedBooks'
+    post:
+      tags:
+        - Books
+      summary: Create a new book
+      operationId: createBook
+      requestBody:
+        description: Book to be created
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBookRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: Bad request
+  /books/{bookId}:
+    get:
+      tags:
+        - Books
+      summary: Get a book by its ID
+      operationId: getBookById
+      parameters:
+        - $ref: '#/components/parameters/BookId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: Book not found
+    put:
+      summary: Update a book by its ID
+      operationId: updateBook
+      parameters:
+        - $ref: '#/components/parameters/BookId'
+      requestBody:
+        description: Updated book information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBookRequest'
+      tags:
+        - Books
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: Bad request
+        '404':
+          description: Book not found
+        '500':
+          description: Internal server error
+    delete:
+      tags:
+        - Books
+      summary: Delete a book by its ID
+      operationId: deleteBook
+      parameters:
+        - $ref: '#/components/parameters/BookId'
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Book not found
+  /books/{bookId}/schedules:
+    get:
+      tags:
+        - Reading Schedules
+      summary: Get all reading schedules for a book by its ID
+      operationId: getReadingSchedulesByBookId
+      parameters:
+        - $ref: '#/components/parameters/BookId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedReadingSchedules'
+        '404':
+          description: Book not found
+    post:
+      tags:
+        - Reading Schedules
+      summary: Create a new reading schedule for a book by its ID
+      operationId: createBookReadingSchedule
+      parameters:
+        - $ref: '#/components/parameters/BookId'
+      requestBody:
+        description: Reading schedule to be created
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReadingScheduleRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadingSchedule'
+        '400':
+          description: Bad request
+        '404':
+          description: Book not found
+  /members:
+    get:
+      tags:
+        - Members
+      summary: Return a list of members with pagination
+      operationId: listMembers
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+        - in: query
+          name: name
+          description: Filter members by (case-insensitive) name (optional)
+          required: false
+          schema:
+            type: string
+            example: "John"
+        - in: query
+          name: email
+          description: Filter members by email (optional)
+          required: false
+          schema:
+            type: string
+            example: "john@example.com"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMembers'
+    post:
+      tags:
+        - Members
+      summary: Create a new member
+      operationId: createMember
+      requestBody:
+        description: Member to be created
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMemberRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+        '400':
+          description: Bad request
+  /members/{memberId}:
+    get:
+      tags:
+        - Members
+      summary: Get a member by their ID
+      operationId: getMemberById
+      parameters:
+        - $ref: '#/components/parameters/MemberId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+        '404':
+          description: Member not found
+    put:
+      tags:
+        - Members
+      summary: Update a member by their ID
+      operationId: updateMember
+      parameters:
+        - $ref: '#/components/parameters/MemberId'
+      requestBody:
+        description: Updated member information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMemberRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+        '400':
+          description: Bad request
+        '404':
+          description: Member not found
+    delete:
+      tags:
+        - Members
+      summary: Delete a member by their ID
+      operationId: deleteMember
+      parameters:
+        - $ref: '#/components/parameters/MemberId'
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Member not found
+  /members/{memberId}/progress:
+    get:
+      tags:
+        - Progress
+      summary: Get all reading progress entries for a member by their ID
+      operationId: getProgressByMemberId
+      parameters:
+        - $ref: '#/components/parameters/MemberId'
+        - in: query
+          name: bookId
+          description: Filter progress entries by book ID (optional)
+          required: false
+          schema:
+            type: string
+            format: uuid
+            example: "550e8400-e29b-41d4-a716-446655440000"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ReadingProgress'
+        '404':
+          description: Member not found
+    post:
+      tags:
+        - Progress
+      summary: Upsert a reading progress for a member by their ID
+      operationId: upsertReadingProgress
+      parameters:
+        - $ref: '#/components/parameters/MemberId'
+      requestBody:
+        description: Reading progress to be created or updated
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReadingProgressRequest'
+      responses:
+        '200':
+          description: Progress updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadingProgress'
+        '201':
+          description: Progress created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadingProgress'
+        '400':
+          description: Bad request
+        '404':
+          description: Member not found
+  /meetings:
+    get:
+      tags:
+        - Meetings
+      summary: Return a list of discussion meetings with pagination
+      operationId: listMeetings
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+        - in: query
+          name: bookId
+          description: Filter meetings by book ID (optional)
+          required: false
+          schema:
+            type: string
+            example: "550e8400-e29b-41d4-a716-446655440000"
+        - in: query
+          name: fromDate
+          description: Filter meetings from this date (inclusive) (optional) (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+            example: "2023-10-15"
+        - in: query
+          name: toDate
+          description: Filter meetings up to this date (inclusive) (optional) (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+            example: "2023-10-20"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/PaginatedMeetings'
+    post:
+      tags:
+        - Meetings
+      summary: Create a new discussion meeting
+      operationId: createMeeting
+      requestBody:
+        description: Meeting to be created
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMeetingRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meeting'
+        '400':
+          description: Bad request
+  /meetings/{meetingId}:
+    get:
+      tags:
+        - Meetings
+      summary: Get a discussion meeting by its ID
+      operationId: getMeetingById
+      parameters:
+        - $ref: '#/components/parameters/MeetingId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meeting'
+        '404':
+          description: Meeting not found
+    put:
+      tags:
+        - Meetings
+      summary: Update a discussion meeting by its ID
+      operationId: updateMeeting
+      parameters:
+        - $ref: '#/components/parameters/MeetingId'
+      requestBody:
+        description: Updated meeting information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMeetingRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meeting'
+        '400':
+          description: Bad request
+        '404':
+          description: Meeting not found
+    delete:
+      tags:
+        - Meetings
+      summary: Delete a discussion meeting by its ID
+      operationId: deleteMeeting
+      parameters:
+        - $ref: '#/components/parameters/MeetingId'
+      responses:
+        '204':
+          description: No Content
+
+components:
+  parameters:
+    Page:
+      name: page
+      in: query
+      description: Page number (default is 0)
+      required: false
+      schema:
+        type: integer
+        default: 0
+        format: int32
+        example: 0
+    PerPage:
+      name: perPage
+      in: query
+      description: NNumber of items per page (default is 10)
+      required: false
+      schema:
+        type: integer
+        default: 10
+        format: int32
+        example: 10
+    BookId:
+      name: bookId
+      in: path
+      description: ID of the book to retrieve
+      required: true
+      schema:
+        type: string
+        example: "550e8400-e29b-41d4-a716-446655440000"
+    MemberId:
+      name: memberId
+      in: path
+      description: ID of the member to retrieve
+      required: true
+      schema:
+        type: string
+        example: "550e8400-e29b-41d4-a716-446655440000"
+    MeetingId:
+      name: meetingId
+      in: path
+      description: ID of the meeting to retrieve
+      required: true
+      schema:
+        type: string
+        example: "550e8400-e29b-41d4-a716-446655440000"
+  schemas:
+    Book:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        title:
+          type: string
+          example: "Java How to Program"
+          maxLength: 100
+        author:
+          type: string
+          example: "Deitel & Deitel"
+          maxLength: 100
+        description:
+          type: string
+          example: "Comprehensive guide to Java programming."
+          maxLength: 500
+        isbn:
+          type: string
+          example: "978-85-66250-00-1"
+          maxLength: 20
+        totalChapters:
+          type: integer
+          example: 20
+          format: int32
+    Meeting:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        bookId:
+          type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        meetingDate:
+          type: string
+          format: date-time
+          example: "2023-10-20T18:00:00Z"
+        meetingLink:
+          type: string
+          example: "https://zoom.us/j/123456789"
+          maxLength: 200
+        discussionTopics:
+          type: string
+          example: "Discuss chapters 1-5"
+          maxLength: 500
+    ReadingSchedule:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        bookId:
+          type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        startChapter:
+          type: integer
+          example: 1
+          format: int32
+        endChapter:
+          type: integer
+          example: 5
+          format: int32
+        discussionDate:
+          type: string
+          format: date
+          example: "2023-10-15"
+    Member:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        name:
+          type: string
+          example: "John Doe"
+          minLength: 3
+          maxLength: 100
+        email:
+          type: string
+          example: "john.doe@example.com"
+          maxLength: 255
+          format: email
+    ReadingProgress:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        memberId:
+          type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        bookId:
+          type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        currentChapter:
+          type: integer
+          example: 10
+          format: int32
+        lastUpdated:
+          type: string
+          format: date-time
+          example: "2023-10-15T14:30:00Z"
+    CreateBookRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Java How to Program"
+          maxLength: 100
+        author:
+          type: string
+          example: "Deitel & Deitel"
+          maxLength: 100
+        description:
+          type: string
+          example: "Comprehensive guide to Java programming."
+          maxLength: 500
+        isbn:
+          type: string
+          example: "978-85-66250-00-1"
+          maxLength: 20
+        totalChapters:
+          type: integer
+          example: 20
+          format: int32
+      required:
+        - title
+        - author
+        - description
+        - totalChapters
+    UpdateBookRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Java How to Program"
+          maxLength: 100
+        author:
+          type: string
+          example: "Deitel & Deitel"
+          maxLength: 100
+        description:
+          type: string
+          example: "Comprehensive guide to Java programming."
+          maxLength: 500
+        isbn:
+          type: string
+          example: "978-85-66250-00-1"
+          maxLength: 20
+        totalChapters:
+          type: integer
+          example: 20
+          format: int32
+      required:
+        - title
+        - author
+        - description
+        - totalChapters
+    PaginatedBooks:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 0
+          format: int32
+        perPage:
+          type: integer
+          example: 10
+          format: int32
+        totalPages:
+          type: integer
+          example: 5
+          format: int64
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Book'
+    PaginatedReadingSchedules:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 0
+          format: int32
+        perPage:
+          type: integer
+          example: 10
+          format: int32
+        totalPages:
+          type: integer
+          example: 5
+          format: int64
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadingSchedule'
+    CreateReadingScheduleRequest:
+      type: object
+      properties:
+        bookId:
+          type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        startChapter:
+          type: integer
+          example: 1
+          format: int32
+        endChapter:
+          type: integer
+          example: 5
+          format: int32
+        discussionDate:
+          type: string
+          format: date
+          example: "2023-10-15"
+      required:
+        - bookId
+        - startChapter
+        - endChapter
+        - discussionDate
+    PaginatedMembers:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 0
+          format: int32
+        perPage:
+          type: integer
+          example: 10
+          format: int32
+        totalPages:
+          type: integer
+          example: 5
+          format: int64
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Member'
+    CreateMemberRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "John Doe"
+          minLength: 3
+          maxLength: 100
+        email:
+          type: string
+          example: "john.doe@example.com"
+          format: email
+          maxLength: 255
+      required:
+        - name
+        - email
+    UpdateMemberRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "John Doe"
+          minLength: 3
+          maxLength: 100
+        email:
+          type: string
+          example: "john.doe@example.com"
+          maxLength: 255
+          format: email
+      required:
+        - name
+        - email
+    ReadingProgressRequest:
+      type: object
+      properties:
+        memberId:
+          type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        bookId:
+          type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        currentChapter:
+          type: integer
+          example: 10
+          format: int32
+      required:
+        - memberId
+        - bookId
+        - currentChapter
+    PaginatedMeetings:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 0
+          format: int32
+        perPage:
+          type: integer
+          example: 10
+          format: int32
+        totalPages:
+          type: integer
+          example: 5
+          format: int64
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Meeting'
+    CreateMeetingRequest:
+      type: object
+      properties:
+        bookId:
+          type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        readingScheduleId:
+          type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        meetingDate:
+          type: string
+          format: date-time
+          example: "2023-10-20T18:00:00Z"
+        meetingLink:
+          type: string
+          example: "https://zoom.us/j/123456789"
+          maxLength: 200
+        discussionTopics:
+          type: string
+          example: "Discuss chapters 1-5"
+          maxLength: 500
+      required:
+        - bookId
+        - readingScheduleId
+        - meetingDate
+        - meetingLink
+        - discussionTopics
+    UpdateMeetingRequest:
+      type: object
+      properties:
+        bookId:
+          type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        readingScheduleId:
+          type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        meetingDate:
+          type: string
+          format: date-time
+          example: "2023-10-20T18:00:00Z"
+        meetingLink:
+          type: string
+          example: "https://zoom.us/j/123456789"
+          maxLength: 200
+        discussionTopics:
+          type: string
+          example: "Discuss chapters 1-5"
+          maxLength: 500
+      required:
+        - bookId
+        - readingScheduleId
+        - meetingDate
+        - meetingLink
+        - discussionTopics

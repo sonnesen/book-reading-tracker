@@ -1,0 +1,397 @@
+FORMAT: 1A
+
+# Book Club Reading Tracker API
+
+API for managing an online book club's reading progress, schedules, and discussion sessions. It allows the creation of books, reading schedules, members, member progress, and meeting sessions.
+
+**Version:** 1.0
+
+**Base URLs:**
+- http://localhost:8080/v1
+- https://api.example.com/v1
+
+# Group Books
+
+Operations related to books
+
+## Books Collection [/books]
+
+### List Books [GET]
+
+Return a list of books with pagination
+
++ Parameters
+    + page (optional, integer, `0`) ... Page number (default is 0)
+    + perPage (optional, integer, `10`) ... Number of items per page (default is 10)
+
++ Response 200 (application/json)
+
+    + Attributes (object)
+        + page (number, required)
+        + perPage (number, required)
+        + totalPages (number, required)
+        + items (array[Book], required)
+
+### Create Book [POST]
+
+Create a new book
+
++ Request (application/json)
+
+    + Attributes (CreateBookRequest)
+
++ Response 201 (application/json)
+
+    + Attributes (Book)
+
++ Response 400 (application/json)
+
+## Book [/books/{bookId}]
+
++ Parameters
+    + bookId (string, `550e8400-e29b-41d4-a716-446655440000`) ... ID of the book to retrieve
+
+### Get Book [GET]
+
+Get a book by its ID
+
++ Response 200 (application/json)
+
+    + Attributes (Book)
+
++ Response 404 (application/json)
+
+### Update Book [PUT]
+
+Update a book by its ID
+
++ Request (application/json)
+
+    + Attributes (UpdateBookRequest)
+
++ Response 200 (application/json)
+
+    + Attributes (Book)
+
++ Response 400 (application/json)
++ Response 404 (application/json)
++ Response 500 (application/json)
+
+### Delete Book [DELETE]
+
+Delete a book by its ID
+
++ Response 204
++ Response 404 (application/json)
+
+# Group Reading Schedules
+
+Operations related to reading schedules for books
+
+## Book Reading Schedules Collection [/books/{bookId}/schedules]
+
++ Parameters
+    + bookId (string, `550e8400-e29b-41d4-a716-446655440000`) ... ID of the book to retrieve
+
+### Get Reading Schedules [GET]
+
+Get all reading schedules for a book by its ID
+
++ Response 200 (application/json)
+
+    + Attributes (object)
+        + page (number, required)
+        + perPage (number, required)
+        + totalPages (number, required)
+        + items (array[ReadingSchedule], required)
+
++ Response 404 (application/json)
+
+### Create Reading Schedule [POST]
+
+Create a new reading schedule for a book by its ID
+
++ Request (application/json)
+
+    + Attributes (CreateReadingScheduleRequest)
+
++ Response 201 (application/json)
+
+    + Attributes (ReadingSchedule)
+
++ Response 400 (application/json)
++ Response 404 (application/json)
+
+# Group Members
+
+Operations related to book club members
+
+## Members Collection [/members]
+
+### List Members [GET]
+
+Return a list of members with pagination
+
++ Parameters
+    + page (optional, integer, `0`) ... Page number (default is 0)
+    + perPage (optional, integer, `10`) ... Number of items per page (default is 10)
+    + name (optional, string, `John`) ... Filter members by (case-insensitive) name (optional)
+    + email (optional, string, `john@example.com`) ... Filter members by email (optional)
+
++ Response 200 (application/json)
+
+    + Attributes (object)
+        + page (number, required)
+        + perPage (number, required)
+        + totalPages (number, required)
+        + items (array[Member], required)
+
+### Create Member [POST]
+
+Create a new member
+
++ Request (application/json)
+
+    + Attributes (CreateMemberRequest)
+
++ Response 201 (application/json)
+
+    + Attributes (Member)
+
++ Response 400 (application/json)
+
+## Member [/members/{memberId}]
+
++ Parameters
+    + memberId (string, `550e8400-e29b-41d4-a716-446655440000`) ... ID of the member to retrieve
+
+### Get Member [GET]
+
+Get a member by their ID
+
++ Response 200 (application/json)
+
+    + Attributes (Member)
+
++ Response 404 (application/json)
+
+### Update Member [PUT]
+
+Update a member by their ID
+
++ Request (application/json)
+
+    + Attributes (UpdateMemberRequest)
+
++ Response 200 (application/json)
+
+    + Attributes (Member)
+
++ Response 400 (application/json)
++ Response 404 (application/json)
+
+### Delete Member [DELETE]
+
+Delete a member by their ID
+
++ Response 204
++ Response 404 (application/json)
+
+# Group Progress
+
+Operations related to tracking members' reading progress
+
+## Member Progress Collection [/members/{memberId}/progress]
+
++ Parameters
+    + memberId (string, `550e8400-e29b-41d4-a716-446655440000`) ... ID of the member to retrieve
+
+### Get Progress [GET]
+
+Get all reading progress entries for a member by their ID
+
++ Parameters
+    + bookId (optional, string, `550e8400-e29b-41d4-a716-446655440000`) ... Filter progress entries by book ID (optional)
+
++ Response 200 (application/json)
+
+    + Attributes (array[ReadingProgress])
+
++ Response 404 (application/json)
+
+### Upsert Progress [POST]
+
+Upsert a reading progress for a member by their ID
+
++ Request (application/json)
+
+    + Attributes (ReadingProgressRequest)
+
++ Response 200 (application/json)
+
+    + Attributes (ReadingProgress)
+
++ Response 201 (application/json)
+
+    + Attributes (ReadingProgress)
+
++ Response 400 (application/json)
++ Response 404 (application/json)
+
+# Group Meetings
+
+Operations related to book discussion meetings
+
+## Meetings Collection [/meetings]
+
+### List Meetings [GET]
+
+Return a list of discussion meetings with pagination
+
++ Parameters
+    + page (optional, integer, `0`) ... Page number (default is 0)
+    + perPage (optional, integer, `10`) ... Number of items per page (default is 10)
+    + bookId (optional, string, `550e8400-e29b-41d4-a716-446655440000`) ... Filter meetings by book ID (optional)
+    + fromDate (optional, string, `2023-10-15`) ... Filter meetings from this date (inclusive) (optional) (YYYY-MM-DD)
+    + toDate (optional, string, `2023-10-20`) ... Filter meetings up to this date (inclusive) (optional) (YYYY-MM-DD)
+
++ Response 200 (application/json)
+
+    + Attributes (object)
+        + page (number, required)
+        + perPage (number, required)
+        + totalPages (number, required)
+        + items (array[Meeting], required)
+
+### Create Meeting [POST]
+
+Create a new discussion meeting
+
++ Request (application/json)
+
+    + Attributes (CreateMeetingRequest)
+
++ Response 201 (application/json)
+
+    + Attributes (Meeting)
+
++ Response 400 (application/json)
+
+## Meeting [/meetings/{meetingId}]
+
++ Parameters
+    + meetingId (string, `550e8400-e29b-41d4-a716-446655440000`) ... ID of the meeting to retrieve
+
+### Get Meeting [GET]
+
+Get a discussion meeting by its ID
+
++ Response 200 (application/json)
+
+    + Attributes (Meeting)
+
++ Response 404 (application/json)
+
+### Update Meeting [PUT]
+
+Update a discussion meeting by its ID
+
++ Request (application/json)
+
+    + Attributes (UpdateMeetingRequest)
+
++ Response 200 (application/json)
+
+    + Attributes (Meeting)
+
++ Response 400 (application/json)
++ Response 404 (application/json)
+
+### Delete Meeting [DELETE]
+
+Delete a discussion meeting by its ID
+
++ Response 204
+
+# Data Structures
+
+## Book (object)
++ id (string, optional) - Example: `550e8400-e29b-41d4-a716-446655440000`
++ title (string, optional) - Example: `Java How to Program`, Max length: 100
++ author (string, optional) - Example: `Deitel & Deitel`, Max length: 100
++ description (string, optional) - Example: `Comprehensive guide to Java programming.`, Max length: 500
++ isbn (string, optional) - Example: `978-85-66250-00-1`, Max length: 20
++ totalChapters (number, optional) - Example: `20`
+
+## Meeting (object)
++ id (string, optional) - Example: `550e8400-e29b-41d4-a716-446655440000`
++ bookId (string, optional) - Example: `550e8400-e29b-41d4-a716-446655440000`
++ meetingDate (string, optional) - Format: date-time, Example: `2023-10-20T18:00:00Z`
++ meetingLink (string, optional) - Example: `https://zoom.us/j/123456789`, Max length: 200
++ discussionTopics (string, optional) - Example: `Discuss chapters 1-5`, Max length: 500
+
+## ReadingSchedule (object)
++ id (string, optional) - Example: `550e8400-e29b-41d4-a716-446655440000`
++ bookId (string, optional) - Example: `550e8400-e29b-41d4-a716-446655440000`
++ startChapter (number, optional) - Example: `1`
++ endChapter (number, optional) - Example: `5`
++ discussionDate (string, optional) - Format: date, Example: `2023-10-15`
+
+## Member (object)
++ id (string, optional) - Example: `550e8400-e29b-41d4-a716-446655440000`
++ name (string, optional) - Example: `John Doe`, Min length: 3, Max length: 100
++ email (string, optional) - Example: `john.doe@example.com`, Max length: 255, Format: email
+
+## ReadingProgress (object)
++ id (string, optional) - Example: `550e8400-e29b-41d4-a716-446655440000`
++ memberId (string, optional) - Example: `550e8400-e29b-41d4-a716-446655440000`
++ bookId (string, optional) - Example: `550e8400-e29b-41d4-a716-446655440000`
++ currentChapter (number, optional) - Example: `10`
++ lastUpdated (string, optional) - Format: date-time, Example: `2023-10-15T14:30:00Z`
+
+## CreateBookRequest (object)
++ title (string, required) - Example: `Java How to Program`, Max length: 100
++ author (string, required) - Example: `Deitel & Deitel`, Max length: 100
++ description (string, required) - Example: `Comprehensive guide to Java programming.`, Max length: 500
++ isbn (string, optional) - Example: `978-85-66250-00-1`, Max length: 20
++ totalChapters (number, required) - Example: `20`
+
+## UpdateBookRequest (object)
++ title (string, required) - Example: `Java How to Program`, Max length: 100
++ author (string, required) - Example: `Deitel & Deitel`, Max length: 100
++ description (string, required) - Example: `Comprehensive guide to Java programming.`, Max length: 500
++ isbn (string, optional) - Example: `978-85-66250-00-1`, Max length: 20
++ totalChapters (number, required) - Example: `20`
+
+## CreateReadingScheduleRequest (object)
++ bookId (string, required) - Example: `550e8400-e29b-41d4-a716-446655440000`
++ startChapter (number, required) - Example: `1`
++ endChapter (number, required) - Example: `5`
++ discussionDate (string, required) - Format: date, Example: `2023-10-15`
+
+## CreateMemberRequest (object)
++ name (string, required) - Example: `John Doe`, Min length: 3, Max length: 100
++ email (string, required) - Example: `john.doe@example.com`, Format: email, Max length: 255
+
+## UpdateMemberRequest (object)
++ name (string, required) - Example: `John Doe`, Min length: 3, Max length: 100
++ email (string, required) - Example: `john.doe@example.com`, Max length: 255, Format: email
+
+## ReadingProgressRequest (object)
++ memberId (string, required) - Example: `550e8400-e29b-41d4-a716-446655440000`
++ bookId (string, required) - Example: `550e8400-e29b-41d4-a716-446655440000`
++ currentChapter (number, required) - Example: `10`
+
+## CreateMeetingRequest (object)
++ bookId (string, required) - Example: `550e8400-e29b-41d4-a716-446655440000`
++ readingScheduleId (string, required) - Example: `550e8400-e29b-41d4-a716-446655440000`
++ meetingDate (string, required) - Format: date-time, Example: `2023-10-20T18:00:00Z`
++ meetingLink (string, required) - Example: `https://zoom.us/j/123456789`, Max length: 200
++ discussionTopics (string, required) - Example: `Discuss chapters 1-5`, Max length: 500
+
+## UpdateMeetingRequest (object)
++ bookId (string, required) - Example: `550e8400-e29b-41d4-a716-446655440000`
++ readingScheduleId (string, required) - Example: `550e8400-e29b-41d4-a716-446655440000`
++ meetingDate (string, required) - Format: date-time, Example: `2023-10-20T18:00:00Z`
++ meetingLink (string, required) - Example: `https://zoom.us/j/123456789`, Max length: 200
++ discussionTopics (string, required) - Example: `Discuss chapters 1-5`, Max length: 500

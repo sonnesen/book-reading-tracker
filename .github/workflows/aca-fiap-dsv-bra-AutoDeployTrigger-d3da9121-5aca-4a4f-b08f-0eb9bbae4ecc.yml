@@ -3,12 +3,12 @@ name: Trigger auto deployment for aca-fiap-dsv-bra
 # When this action will be executed
 on:
   # Automatically trigger it when detected changes in repo
-  push:
-    branches: 
-      [ feature/azure ]
-    paths:
-    - '**'
-    - '.github/workflows/aca-fiap-dsv-bra-AutoDeployTrigger-d3da9121-5aca-4a4f-b08f-0eb9bbae4ecc.yml'
+  #push:
+    #branches: 
+    #  [ feature/azure ]
+    #paths:
+    #- '**'
+    #- '.github/workflows/aca-fiap-dsv-bra-AutoDeployTrigger-d3da9121-5aca-4a4f-b08f-0eb9bbae4ecc.yml'
 
   # Allow manual trigger 
   workflow_dispatch:      

@@ -1,0 +1,32 @@
+spring:
+  sql:
+    init:
+      mode: always
+      platform: postgresql
+      # schema-locations: classpath:db/postgres/schema.sql
+      data-locations: classpath:db/postgres/data.sql
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    driver-class-name: org.postgresql.Driver
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 30000
+      max-lifetime: 600000
+      connection-timeout: 20000
+      pool-name: HikariCP
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    defer-datasource-initialization: true
+
+logging:
+  level:
+    root: INFO
+    com.sonnesen.book_reading_tracker: DEBUG

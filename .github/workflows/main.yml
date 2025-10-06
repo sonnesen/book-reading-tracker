@@ -11,6 +11,9 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    outputs:
+      image_tag: ${{ steps.set_image_tag.outputs.image_tag }}
     
     steps:
       - name: Check out the repo
@@ -49,7 +52,7 @@ jobs:
 
       - name: Set image tag
         id: set_image_tag
-        run: echo "IMAGE_TAG=${{ github.sha }}" >> $GITHUB_OUTPUT
+        run: echo "image_tag=${{ github.sha }}" >> $GITHUB_OUTPUT
 
       - name: Build and push
         uses: docker/build-push-action@v6
@@ -59,7 +62,7 @@ jobs:
           push: true
           tags: |
             ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_APP_NAME }}:latest
-            ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_APP_NAME }}:${{ steps.set_image_tag.outputs.IMAGE_TAG }}
+            ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_APP_NAME }}:${{ steps.set_image_tag.outputs.image_tag }}
   
   deploy:
     runs-on: ubuntu-latest
@@ -76,6 +79,4 @@ jobs:
         with:
           resourceGroup: ${{ env.RESOURCE_GROUP }}
           containerAppName: ${{ env.CONTAINER_APP_NAME }}
-          imageToDeploy: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_APP_NAME }}:${{ needs.build.result.IMAGE_TAG }}
-
-          
+          imageToDeploy: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_APP_NAME }}:${{ needs.build.outputs.image_tag }}

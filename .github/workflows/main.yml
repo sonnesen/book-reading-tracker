@@ -7,7 +7,7 @@ env:
   AZURE_CONTAINER_REGISTRY: acrlivebr
   CONTAINER_APP_NAME: book-reading-tracker-app
   RESOURCE_GROUP: rslivebr
-  CONTAINER_APP_ENV: caelivebr
+  CONTAINER_APP_ENV: caelive-br
 
 jobs:
   build:

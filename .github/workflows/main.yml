@@ -36,9 +36,12 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Login to ACR
-        uses: azure/docker-login@v2
-        with: 
-          login-server: acrfiapdevr-f3ctfwgdf7gudrbz.azurecr.io
+        uses: docker/login-action@v3
+        with:
+          registry: acrfiapdevr-f3ctfwgdf7gudrbz.azurecr.io
+          username: ${{ vars.AZURE_CLIENT_ID }}
+          password: ${{ secrets.AZURE_CLIENT_SECRET }}
+      
   
   deploy:
     runs-on: ubuntu-latest

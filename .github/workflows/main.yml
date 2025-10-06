@@ -81,10 +81,8 @@ jobs:
           containerAppName: ${{ env.CONTAINER_APP_NAME }}
           imageToDeploy: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_APP_NAME }}:${{ needs.build.outputs.image_tag }}
           environmentVariables: |
-            [
-              { "name": "SPRING_PROFILES_ACTIVE", "value": "prd" },
-              { "name": "SPRING_DATASOURCE_URL", "secretRef": "spring-datasource-url" },
-              { "name": "SPRING_DATASOURCE_USER", "secretRef": "spring-datasource-user" },
-              { "name": "SPRING_DATASOURCE_PASSWORD", "secretRef": "spring-datasource-password" }
-            ]
+            SPRING_PROFILES_ACTIVE=prd
+            SPRING_DATASOURCE_URL=secretRef:spring-datasource-url
+            SPRING_DATASOURCE_USER=secretRefspring-datasource-user
+            SPRING_DATASOURCE_PASSWORD=secretRef:spring-datasource-password
 

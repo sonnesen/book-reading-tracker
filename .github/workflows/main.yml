@@ -80,7 +80,7 @@ jobs:
           resourceGroup: ${{ env.RESOURCE_GROUP }}
           containerAppName: ${{ env.CONTAINER_APP_NAME }}
           imageToDeploy: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_APP_NAME }}:${{ needs.build.outputs.image_tag }}
-          environmentVariables: |
+          environmentVariables: >
             SPRING_PROFILES_ACTIVE=prd
             SPRING_DATASOURCE_URL=secretRef:spring-datasource-url
             SPRING_DATASOURCE_USER=secretRefspring-datasource-user

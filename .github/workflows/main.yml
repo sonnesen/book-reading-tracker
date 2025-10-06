@@ -4,10 +4,10 @@ on:
   workflow_dispatch:  
 
 env:
-  AZURE_CONTAINER_REGISTRY: acrfiapbr
+  AZURE_CONTAINER_REGISTRY: acrlivebr
   CONTAINER_APP_NAME: book-reading-tracker-app
-  RESOURCE_GROUP: rs-fiap
-  CONTAINER_APP_ENV: cae-fiap-br
+  RESOURCE_GROUP: rslivebr
+  CONTAINER_APP_ENV: caelivebr
 
 jobs:
   build:

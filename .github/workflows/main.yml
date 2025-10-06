@@ -83,6 +83,6 @@ jobs:
           environmentVariables: >
             SPRING_PROFILES_ACTIVE=prd
             SPRING_DATASOURCE_URL=secretref:spring-datasource-url
-            SPRING_DATASOURCE_USER=secretref:spring-datasource-user
+            SPRING_DATASOURCE_USERNAME=secretref:spring-datasource-username
             SPRING_DATASOURCE_PASSWORD=secretref:spring-datasource-password
 

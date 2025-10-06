@@ -29,6 +29,16 @@ jobs:
 
       - name: Build with Maven
         run: mvn -B -DskipTests clean package 
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Login to ACR
+        uses: azure/docker-login@v2
+        with: 
+          login-server: acrfiapdevr-f3ctfwgdf7gudrbz.azurecr.io
   
   deploy:
     runs-on: ubuntu-latest

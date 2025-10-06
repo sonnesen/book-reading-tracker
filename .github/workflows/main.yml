@@ -82,7 +82,7 @@ jobs:
           imageToDeploy: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_APP_NAME }}:${{ needs.build.outputs.image_tag }}
           environmentVariables: >
             SPRING_PROFILES_ACTIVE=prd
-            SPRING_DATASOURCE_URL=secretRef:spring-datasource-url
-            SPRING_DATASOURCE_USER=secretRefspring-datasource-user
-            SPRING_DATASOURCE_PASSWORD=secretRef:spring-datasource-password
+            SPRING_DATASOURCE_URL=secretref:spring-datasource-url
+            SPRING_DATASOURCE_USER=secretref:spring-datasource-user
+            SPRING_DATASOURCE_PASSWORD=secretref:spring-datasource-password
 

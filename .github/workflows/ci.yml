@@ -1,4 +1,12 @@
 name: CI
 
 on:
-  workflow_dispatch:  
+  workflow_dispatch: 
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Hello Github Actions
+        run: echo "Hello Github Actions"

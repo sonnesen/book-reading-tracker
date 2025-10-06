@@ -4,9 +4,10 @@ on:
   workflow_dispatch:  
 
 env:
-  AZURE_CONTAINER_REGISTRY: acrfiapdevr-f3ctfwgdf7gudrbz
+  AZURE_CONTAINER_REGISTRY: acrfiapbr
   CONTAINER_APP_NAME: book-reading-tracker-app
   RESOURCE_GROUP: rs-fiap
+  CONTAINER_APP_ENV: cae-fiap-br
 
 jobs:
   build:
@@ -79,6 +80,7 @@ jobs:
         with:
           resourceGroup: ${{ env.RESOURCE_GROUP }}
           containerAppName: ${{ env.CONTAINER_APP_NAME }}
+          containerAppEnvironment: ${{ env.CONTAINER_APP_ENV }}
           imageToDeploy: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_APP_NAME }}:${{ needs.build.outputs.image_tag }}
           environmentVariables: >
             SPRING_PROFILES_ACTIVE=prd

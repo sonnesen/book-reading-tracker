@@ -4,7 +4,7 @@ on:
   workflow_dispatch:  
 
 env:
-  AZURE_CONTAINER_REGISTRY: acrlivebr
+  AZURE_CONTAINER_REGISTRY: acrfiapbr
   CONTAINER_APP_NAME: book-reading-tracker-app
   
 jobs:
@@ -62,4 +62,5 @@ jobs:
           tags: |
             ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_APP_NAME }}:latest
             ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_APP_NAME }}:${{ steps.set_image_tag.outputs.image_tag }}  
+
   
